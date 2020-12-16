@@ -1,21 +1,26 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 
 const Sushi = (props) => {
-  const {img_url, name, price} = props.sushi;
-  const [eaten, setEaten] = useState(false)
+  const {img_url, name, price, id} = props.sushi;
+  const [eaten, setEaten] = useState(false) //hook for state
 
-  const eatSushi = (price) => {
+  useEffect(() => { //ComponentDidMount
+    if(props.eaten)
+      setEaten(true)
+  })
+  
+  const eatSushi = (price, id) => {
+    if(props.moneyLeft - price > -1){
     setEaten(true)
     //call function from app.js
     //add sushi id to the plates
-    props.addPlates(price)
+    props.addPlates(price, id)
+    }
   }
-
-
 
   return (
     <div className="sushi">
-      <div className="plate" onClick={() => (props.moneyLeft - price < 0) ? null : eatSushi(price)}>
+      <div className="plate" onClick={() => eatSushi(price, id)}>
         {
           /* Tell me if this sushi has been eaten! */
           eaten ? null : (
