@@ -1,14 +1,24 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 
 const Sushi = (props) => {
   const {img_url, name, price} = props.sushi;
-  
+  const [eaten, setEaten] = useState(false)
+
+  const eatSushi = (price) => {
+    setEaten(true)
+    //call function from app.js
+    //add sushi id to the plates
+    props.addPlates(price)
+  }
+
+
+
   return (
     <div className="sushi">
-      <div className="plate" onClick={/* Give me a callback! */ null}>
+      <div className="plate" onClick={() => (props.moneyLeft - price < 0) ? null : eatSushi(price)}>
         {
           /* Tell me if this sushi has been eaten! */
-          false ? null : (
+          eaten ? null : (
             <img src={img_url} width="100%" />
           )
         }
@@ -21,3 +31,4 @@ const Sushi = (props) => {
 };
 
 export default Sushi;
+

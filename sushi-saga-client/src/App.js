@@ -9,13 +9,22 @@ class App extends Component {
 
   state = {
     sushi: [],
-    position: [0, 4]
+    position: [0, 4],
+    eatenPlates: [],
+    moneyLeft: 100
   }
 
   handleSushiRotation = () => {
     console.log("Hi")
     this.setState({
       position: [ this.state.position[0] + 4, this.state.position[1] + 4]
+    })
+  }
+
+  addPlates = (price) => {
+    this.setState({
+      eatenPlates: [...this.state.eatenPlates, price],
+      moneyLeft: this.state.moneyLeft - price
     })
   }
 
@@ -31,8 +40,13 @@ class App extends Component {
         <SushiContainer 
           sushi={this.state.sushi.slice(this.state.position[0], this.state.position[1])}
           handleSushiRotation={this.handleSushiRotation}
+          addPlates={this.addPlates}
+          moneyLeft={this.state.moneyLeft}
         />
-        <Table />
+        <Table 
+          eatenPlates={this.state.eatenPlates}
+          moneyLeft={this.state.moneyLeft}
+        />
       </div>
     );
   }
