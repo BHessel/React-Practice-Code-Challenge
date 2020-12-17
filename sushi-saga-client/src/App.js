@@ -8,17 +8,26 @@ const API = "http://localhost:3000/sushis";
 class App extends Component {
   state = {
     sushi: [],
-    position: [0, 4],
-    eatenPlates: [1, 2],
+    position: 0,
+    eatenPlates: [],
     moneyLeft: 100,
+    servingSushi: 4,
   };
+
+  async componentDidMount() {
+    const response = await fetch(API);
+    const sushi = await response.json();
+    this.setState({ sushi });
+  }
 
   handleSushiRotation = () => {
     this.setState({
       position:
-        this.state.position[0] + 4 === 100
-          ? [0, 4]
-          : [this.state.position[0] + 4, this.state.position[1] + 4],
+        this.state.position + this.state.servingSushi >= this.state.sushi.length
+          ? this.state.position +
+            this.state.servingSushi -
+            this.state.sushi.length
+          : this.state.position + this.state.servingSushi,
     });
   };
 
@@ -32,28 +41,55 @@ class App extends Component {
     });
   };
 
-  async componentDidMount() {
-    const response = await fetch(API);
-    const sushi = await response.json();
-    this.setState({ sushi });
-  }
+  serveSushi = () => {
+    if (
+      this.state.position + this.state.servingSushi >
+      this.state.sushi.length
+    ) {
+      const plus =
+        this.state.servingSushi -
+        (this.state.sushi.length - this.state.position);
+      console.log(this.state.position);
+      console.log(plus);
+      return [
+        ...this.state.sushi.slice(this.state.position, this.state.sushi.length),
+        ...this.state.sushi.slice(0, plus),
+      ];
+    }
+    return this.state.sushi.slice(
+      this.state.position,
+      this.state.position + this.state.servingSushi
+    );
+  };
+
+  servingSushiChangeHandler = (event) => {
+    this.setState({
+      servingSushi: +event.target.value,
+    });
+  };
+
+  addCashHandler = (cash) => {
+    this.setState({
+      moneyLeft: this.state.moneyLeft + cash,
+    });
+  };
 
   render() {
     return (
       <div className="app">
         <SushiContainer
-          sushi={this.state.sushi.slice(
-            this.state.position[0],
-            this.state.position[1]
-          )}
+          sushi={this.serveSushi()}
           handleSushiRotation={this.handleSushiRotation}
           addPlates={this.addPlates}
           moneyLeft={this.state.moneyLeft}
           eatenPlates={this.state.eatenPlates}
+          servingSushi={this.state.servingSushi}
+          servingSushiChangeHandler={this.servingSushiChangeHandler}
         />
         <Table
           eatenPlates={this.state.eatenPlates}
           moneyLeft={this.state.moneyLeft}
+          addCashHandler={this.addCashHandler}
         />
       </div>
     );
